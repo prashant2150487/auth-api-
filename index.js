@@ -13,7 +13,12 @@ const HOST = process.env.HOST || "0.0.0.0";
 const startServer = async () => {
     try {
         await connectDatabase();
-        await sequelize.sync({ alter: true });
+        // Avoid repeated schema alterations on every boot unless explicitly enabled
+        if (process.env.DB_SYNC_ALTER === "true") {
+            await sequelize.sync({ alter: true });
+        } else {
+            await sequelize.sync();
+        }
         app.listen(PORT, HOST, () => {
             console.log(`🚀 Server is running on http://${HOST}:${PORT}`);
             console.log(`📊 Health check: http://${HOST}:${PORT}/health`);

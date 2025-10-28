@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticateToken } from '../middleware/auth.js';
-import { requestPasswordReset, signIn, signUp } from '../controllers/authController.js';
+import { requestPasswordReset, resendEmailVerificationOtp, signIn, signUp, verifyEmailOtp } from '../controllers/authController.js';
 
 const router = express.Router();
 
@@ -8,6 +8,8 @@ const router = express.Router();
 router.post('/signup', signUp);
 router.post("/signin", signIn);
 router.post("/request-password-reset", requestPasswordReset);
+router.post("/verifyEmailOtp", verifyEmailOtp);
+router.post("/resendEmailVerificationOtp", resendEmailVerificationOtp);
 
 
 // Protected routes
