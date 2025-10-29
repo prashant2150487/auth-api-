@@ -3,6 +3,11 @@ import dotenv from "dotenv";
 import { connectDatabase, sequelize } from "./src/config/db.js";
 import app from "./src/app.js"
 
+// Import all models to ensure they are registered with Sequelize
+import "./src/models/User.js";
+import "./src/models/Role.js";
+import "./src/models/Permission.js";
+
 // Load environment variables
 dotenv.config();
 
@@ -16,8 +21,9 @@ const startServer = async () => {
         // Avoid repeated schema alterations on every boot unless explicitly enabled
         if (process.env.DB_SYNC_ALTER === "true") {
             await sequelize.sync({ alter: true });
+            console.log("sync db")
         } else {
-            await sequelize.sync();
+            sequelize.sync();
         }
         app.listen(PORT, HOST, () => {
             console.log(`🚀 Server is running on http://${HOST}:${PORT}`);
