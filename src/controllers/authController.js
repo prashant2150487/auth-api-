@@ -110,15 +110,15 @@ export const verifyEmailOtp = async (req, res) => {
         email: user.email,
       });
       res.status(200).json({
-        success:true,
-        message:"Email already verified",
+        success: true,
+        message: "Email already verified",
         token,
-        user:{
-          id:user.id,
-          name:user.name,
-          email:user.email,
-        }
-      })
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+      });
     }
     const now = new Date();
     if (
@@ -330,7 +330,43 @@ export const resetPassword = async (req, res) => {
   }
 };
 export const changePassword = async (req, res) => {};
-export const deleteAccount = async (req, res) => {};
+export const deleteAccount = async (req, res) => {
+  try {
+    const { id, password } = req.body;
+    if (!id || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "id and password required",
+      });
+    }
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({
+        success: true,
+        message: "User not found",
+      });
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+    await user.destroy();
+    res.status(200).json({
+      success: true,
+      message: "User account deleted successfully",
+    });
+    
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 export const updateProfile = async (req, res) => {};
 export const getProfile = async (req, res) => {
   try {

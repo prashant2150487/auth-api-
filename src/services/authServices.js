@@ -3,6 +3,7 @@ import { generateOTP } from "../utils/helper.js";
 import { generateToken } from "../utils/jwt.js";
 import bcrypt from "bcryptjs";
 import { sendEmail } from "../utils/sendEmail.js";
+import Role from "../models/Role.js";
 
 export const signUpService = async (name, email, password) => {
   const existingUser = await User.findOne({
@@ -15,6 +16,15 @@ export const signUpService = async (name, email, password) => {
 
   const hashedPassword = await bcrypt.hash(password, saltRound);
 
+  // Find or create default "user" role
+  let defaultRole = await Role.findOne({ where: { name: "user" } });
+  if (!defaultRole) {
+    // Create default role if it doesn't exist
+    defaultRole = await Role.create({
+      name: "user",
+      description: "Default user role",
+    });
+  }
   const otp = generateOTP();
   console.log(otp,"otp");
   const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
@@ -23,6 +33,7 @@ export const signUpService = async (name, email, password) => {
     name,
     email,
     password: hashedPassword,
+    roleId: defaultRole.id, 
     isVerified: false,
     emailVerificationOTP: otp,
     emailVerificationOTPExpiresAt: otpExpiresAt,
