@@ -41,7 +41,6 @@ export const signUpService = async (name, email, password) => {
   return {
     message:
       "Signup initiated. Please verify your email with otp send to your email",
-    userId: user.id,
-    email: user.email,
+    user
   };
 };
