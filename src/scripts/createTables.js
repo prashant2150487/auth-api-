@@ -1,5 +1,8 @@
 import { sequelize } from '../config/db.js';
 import User from '../models/User.js';
+import Role from '../models/Role.js';
+import Permission from '../models/Permission.js';
+import WorkspaceItem from '../models/WorkspaceItem.js';
 
 const createTables = async () => {
     try {
@@ -9,8 +12,11 @@ const createTables = async () => {
         await sequelize.sync({ force: false });
         
         console.log('✅ Database tables created successfully!');
-        console.log('📊 Tables created:');
-        console.log('   - Users');
+        console.log('📊 Tables ensured:');
+        console.log('   - users');
+        console.log('   - roles');
+        console.log('   - permissions');
+        console.log('   - workspace_items');
         
     } catch (error) {
         console.error('❌ Error creating tables:', error);
