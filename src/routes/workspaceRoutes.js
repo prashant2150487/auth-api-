@@ -8,7 +8,7 @@ const router = express.Router();
 router.get(
   "/list",
   authenticateToken,
-  authorizePermissions(["can_view"]),
+  // authorizePermissions(["can_view"]),
   listChildren
 );
 
@@ -16,7 +16,7 @@ router.get(
 router.get(
   "/tree",
   authenticateToken,
-  authorizePermissions(["can_view"]),
+  // authorizePermissions(["can_view"]),
   getTree
 );
 
@@ -24,13 +24,13 @@ router.get(
 router.post(
   "/folder",
   authenticateToken,
-  authorizePermissions(["can_edit"]),
+  // authorizePermissions(["can_edit"]),
   createFolder
 );
 router.post(
   "/file",
   authenticateToken,
-  authorizePermissions(["can_edit"]),
+  // authorizePermissions(["can_edit"]),
   createFile
 );
 router.post(
