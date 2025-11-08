@@ -1,6 +1,14 @@
 import express from "express";
 import { authenticateToken, authorizePermissions } from "../middleware/auth.js";
-import { createFile, createFolder, createTask, getTree, listChildren, softDeleteItem, updateItem } from "../controllers/workspaceController.js";
+import {
+  createFile,
+  createFolder,
+  createTask,
+  getTree,
+  listChildren,
+  softDeleteItem,
+  updateItem,
+} from "../controllers/workspaceController.js";
 
 const router = express.Router();
 
@@ -57,5 +65,3 @@ router.delete(
 );
 
 export default router;
-
-
