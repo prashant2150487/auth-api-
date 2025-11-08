@@ -30,7 +30,6 @@ export const deleteAccount = async (req, res) => {
       success: true,
       message: "User account deleted successfully",
     });
-    
   } catch (error) {
     console.log(error.message);
     res.status(500).json({
