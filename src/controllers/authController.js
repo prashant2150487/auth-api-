@@ -330,5 +330,17 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-
-export const logout = async (req, res) => {};
+export const logout = async (req, res) => {
+  try {
+    res.status(200).json({
+      success: true,
+      message: "Sign out successful",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

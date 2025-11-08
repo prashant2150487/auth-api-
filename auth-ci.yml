@@ -1,0 +1,64 @@
+name: Auth CI
+
+on:
+  push:
+    branches: [ main, live ]
+    paths: [ 'auth/**' ]
+    tags: ['v*']
+  pull_request:
+    paths: [ 'auth/**' ]
+
+jobs:
+  build:
+    name: Install & Test auth
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Cache auth node_modules
+        uses: actions/cache@v4
+        with:
+          path: auth/node_modules
+          key: ${{ runner.os }}-auth-node-${{ hashFiles('auth/package.json') }}
+
+      - name: Install auth dependencies
+        run: |
+          npm --prefix ./auth ci
+
+      - name: Run auth lint (if present)
+        run: |
+          npm --prefix ./auth run lint --if-present
+
+      - name: Run auth tests (if present)
+        run: |
+          npm --prefix ./auth run test --if-present
+
+  publish:
+    name: Publish auth (tag)
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install auth dependencies
+        run: |
+          npm --prefix ./auth ci
+
+      - name: Publish placeholder
+        run: |
+          echo "Tag push detected for auth: ${GITHUB_REF}"
+          echo "Add publish/deploy steps here. Use GitHub Secrets to supply credentials."
