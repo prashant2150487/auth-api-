@@ -50,7 +50,12 @@ export const signIn = async (req, res) => {
       success: true,
       message: "Sign in successful",
       data: {
-        user,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+
         token,
       },
     });
