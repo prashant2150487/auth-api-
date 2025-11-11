@@ -1,0 +1,68 @@
+name: Auth CI
+
+on:
+  push:
+    branches: [ main, live ]
+    tags: ['v*']
+  pull_request:
+    branches: [ main, live ]
+
+jobs:
+  build:
+    name: Install & Test Auth
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-auth-node-${{ matrix.node-version }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-auth-node-${{ matrix.node-version }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+    #   - name: Run lint (if present)
+    #     run: npm run lint --if-present
+
+    #   - name: Run tests (if present)
+    #     run: npm run test --if-present
+
+  publish:
+    name: Publish Auth (on tag)
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish placeholder
+        run: |
+          echo "Tag detected: ${GITHUB_REF}"
+          echo "Add publish/deploy steps here:"
+          echo "  - npm publish (for npm package)"
+          echo "  - docker build & push (for container)"
+          echo "  - deploy to cloud platform"
+          echo "Use GitHub Secrets for authentication (NPM_TOKEN, DOCKER_TOKEN, etc.)"
