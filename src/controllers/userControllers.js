@@ -38,7 +38,54 @@ export const deleteAccount = async (req, res) => {
     });
   }
 };
-export const updateProfile = async (req, res) => {};
+// Update logged-in user profile
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    const user = await User.findByPk(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    if (email && user.email !== email) {
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: "Email already in use",
+        });
+      }
+      user.email = email;
+    }
+    if (name) {
+      user.name = name;
+    }
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 12);
+      user.password = hashedPassword;
+    }
+
+    await user.save();
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
 export const getProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
@@ -61,6 +108,47 @@ export const getProfile = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Internal server error",
+    });
+  }
+};
+export const allUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: ["id", "name", "email"],
+    });
+    res.status(200).json({
+      success: true,
+      data: { users },
+    });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+export const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: { user },
+    });
+
+    console.log(id);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: err.message,
     });
   }
 };

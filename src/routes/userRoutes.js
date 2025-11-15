@@ -1,11 +1,18 @@
 import express from "express";
 import { authenticateToken } from "../middleware/auth.js";
-import { getProfile, updateProfile } from "../controllers/userControllers.js";
+import {
+  allUsers,
+  getProfile,
+  getUserById,
+  updateProfile,
+} from "../controllers/userControllers.js";
 
 const router = express.Router();
-
-router.get("/get-profile", authenticateToken, getProfile);
-router.delete("/:id", authenticateToken, deleteAccount)
-router.patch("/:id", authenticateToken, updateProfile)
+// Get logged-in user profile
+router.get("/me", authenticateToken, getProfile);
+// router.delete("/:id", authenticateToken, deleteAccount)
+router.put("/me", authenticateToken, updateProfile);
+router.get("/", authenticateToken, allUsers);
+router.get("/:id",getUserById)
 
 export default router;
