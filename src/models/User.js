@@ -15,8 +15,17 @@ const User=sequelize.define("User",{
     email:{
         type:DataTypes.STRING,
         allowNull:false,
-        unique:true,
     },
+    contact:{
+        type:DataTypes.STRING,
+        allowNull:true,
+    },
+    phone:{
+        type:DataTypes.STRING,
+        allowNull:true,
+    },
+    
+    
     password:{
         type:DataTypes.STRING,
         allowNull:false,
@@ -48,11 +57,6 @@ const User=sequelize.define("User",{
     },
     roleId:{
         type:DataTypes.INTEGER,
-        allowNull:true,
-        references: {
-            model: Role,
-            key: "id",
-        },
     },
     permissionIds:{
         type:DataTypes.JSON,
@@ -62,6 +66,12 @@ const User=sequelize.define("User",{
     },
 }, {
     tableName: "users",
+    indexes: [
+        {
+            unique: true,
+            fields: ["email"],
+        },
+    ],
 });
 
 // User belongs to Role (gets role-based permissions)

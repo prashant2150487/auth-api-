@@ -41,7 +41,7 @@ export const deleteAccount = async (req, res) => {
 // Update logged-in user profile
 export const updateProfile = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password , contact , phone} = req.body;
     const user = await User.findByPk(req.user.id);
     if (!user) {
       return res.status(404).json({
@@ -62,6 +62,8 @@ export const updateProfile = async (req, res) => {
     if (name) {
       user.name = name;
     }
+    if(contact) user.contact=contact
+    if(phone) user.phone=phone
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 12);
       user.password = hashedPassword;
@@ -114,7 +116,7 @@ export const getProfile = async (req, res) => {
 export const allUsers = async (req, res) => {
   try {
     const users = await User.findAll({
-      attributes: ["id", "name", "email"],
+      attributes: ["id", "name", "email","image", "phone", "contact"],
     });
     res.status(200).json({
       success: true,
