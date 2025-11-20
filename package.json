@@ -12,11 +12,17 @@
     "create-tables": "node src/scripts/createTables.js"
   },
   "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "axios": "^1.13.2",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
+    "dd": "^0.26.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "install": "^0.13.0",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
+    "multer-s3": "^3.0.1",
     "mysql2": "^3.15.2",
     "nodemailer": "^7.0.9",
     "sequelize": "^6.37.7"

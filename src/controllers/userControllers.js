@@ -77,6 +77,8 @@ export const updateProfile = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        contact: user.contact,
+        phone: user.phone,
       },
     });
   } catch (err) {
@@ -91,7 +93,7 @@ export const updateProfile = async (req, res) => {
 export const getProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
-      attributes: ["id", "name", "email"],
+      attributes: ["id", "name", "email","image", "phone", "contact"],
     });
 
     if (!user) {
