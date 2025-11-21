@@ -16,4 +16,10 @@ router.post(
   uploadImage
 );
 
+// router.post('/upload/presigned-url', generatePresignedUrl);
+// File management routes
+// router.get('/files', listFiles);
+// router.get('/files/:key/metadata', getFileMetadata);
+// router.get('/files/:key/download-url', generateDownloadUrl);
+// router.delete('/files/:key', deleteFile);
 export default router;
