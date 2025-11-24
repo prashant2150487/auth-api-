@@ -17,6 +17,5 @@ router.post("/request-password-reset", requestPasswordReset);
 router.post("/verifyEmailOtp", verifyEmailOtp);
 router.post("/resendEmailVerificationOtp", resendEmailVerificationOtp);
 
-// Protected routes
 
 export default router;

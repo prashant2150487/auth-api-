@@ -2,82 +2,94 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db.js";
 import Role from "./Role.js";
 
-const User=sequelize.define("User",{
-    id:{
-        type:DataTypes.INTEGER,
-        primaryKey:true,
-        autoIncrement:true,
+const User = sequelize.define(
+  "User",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    name:{
-        type:DataTypes.STRING,
-        allowNull:false,
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    email:{
-        type:DataTypes.STRING,
-        allowNull:false,
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    contact:{
-        type:DataTypes.STRING,
-        allowNull:true,
+    secondaryEmail: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
-    phone:{
-        type:DataTypes.STRING,
-        allowNull:true,
+    isActiveSecondaryEmail: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
-    
-    
-    password:{
-        type:DataTypes.STRING,
-        allowNull:false,
+    contact: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
-    image:{
-        type:DataTypes.STRING,
-        allowNull:true,
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
-    resetToken:{
-        type:DataTypes.STRING,
-        allowNull:true,
+
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    resetTokenExpiresAt:{
-        type:DataTypes.DATE,
-        allowNull:true,
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
-    isVerified:{
-        type:DataTypes.BOOLEAN,
-        allowNull:true,
-        defaultValue:false,
+    resetToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
-    emailVerificationOTP:{
-        type:DataTypes.STRING,
-        allowNull:true,
+    resetTokenExpiresAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
-    emailVerificationOTPExpiresAt:{
-        type:DataTypes.DATE,
-        allowNull:true,
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false,
     },
-    roleId:{
-        type:DataTypes.INTEGER,
+    emailVerificationOTP: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
-    permissionIds:{
-        type:DataTypes.JSON,
-        allowNull:true,
-        defaultValue:[],
-        comment: "Array of permission IDs assigned directly to user",
+    emailVerificationOTPExpiresAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
-}, {
+    roleId: {
+      type: DataTypes.INTEGER,
+    },
+    permissionIds: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: [],
+      comment: "Array of permission IDs assigned directly to user",
+    },
+  },
+  {
     tableName: "users",
     indexes: [
-        {
-            unique: true,
-            fields: ["email"],
-        },
+      {
+        unique: true,
+        fields: ["email"],
+      },
     ],
-});
+  }
+);
 
 // User belongs to Role (gets role-based permissions)
 User.belongsTo(Role, {
-    foreignKey: "roleId",
-    as: "role",
+  foreignKey: "roleId",
+  as: "role",
 });
 
-export default User
+export default User;

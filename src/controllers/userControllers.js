@@ -79,6 +79,9 @@ export const updateProfile = async (req, res) => {
         email: user.email,
         contact: user.contact,
         phone: user.phone,
+        secondaryEmail: user.secondaryEmail,
+        isActiveSecondaryEmail: user.isActiveSecondaryEmail,
+        image: user.image,
       },
     });
   } catch (err) {
@@ -93,7 +96,7 @@ export const updateProfile = async (req, res) => {
 export const getProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
-      attributes: ["id", "name", "email","image", "phone", "contact"],
+      attributes: ["id", "name", "email","image", "phone", "contact","secondaryEmail","isActiveSecondaryEmail"]
     });
 
     if (!user) {

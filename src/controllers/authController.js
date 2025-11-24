@@ -57,6 +57,8 @@ export const signIn = async (req, res) => {
           image: user.image,
           phone: user.phone,
           contact: user.contact,
+          secondaryEmail: user.secondaryEmail,
+          isActiveSecondaryEmail: user.isActiveSecondaryEmail,
         },
 
         token,

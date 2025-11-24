@@ -1,0 +1,461 @@
+================================================================================
+                    LEARNING PROGRESS DOCUMENTATION
+                    GoodDay API Project - Full Stack Development
+================================================================================
+
+Date: Current Learning Session
+Project: GoodDay API (Node.js/Express REST API)
+Purpose: Documenting all concepts, technologies, and patterns learned
+
+================================================================================
+1. PROJECT OVERVIEW
+================================================================================
+
+This is a comprehensive REST API built with Node.js and Express.js that provides:
+- User authentication and authorization system
+- File upload functionality using AWS S3
+- Workspace management (folders, files, tasks)
+- Role-based access control (RBAC)
+- Email verification and password reset
+- User profile management
+
+================================================================================
+2. TECHNOLOGIES AND FRAMEWORKS LEARNED
+================================================================================
+
+2.1 Core Technologies:
+   - Node.js: JavaScript runtime environment
+   - Express.js 5.1.0: Web application framework for Node.js
+   - ES6 Modules: Using import/export instead of require()
+   - MySQL: Relational database management system
+   - Sequelize 6.37.7: ORM (Object-Relational Mapping) for MySQL
+
+2.2 Authentication & Security:
+   - JWT (JSON Web Tokens): Token-based authentication using jsonwebtoken
+   - bcryptjs: Password hashing library for secure password storage
+   - Middleware pattern: Request authentication and authorization
+
+2.3 Cloud Services:
+   - AWS S3: Amazon Simple Storage Service for file storage
+   - AWS SDK v3 (@aws-sdk/client-s3): Modern AWS SDK for S3 operations
+   - multer-s3: Middleware for handling multipart/form-data and uploading to S3
+
+2.4 Email Services:
+   - Nodemailer: Email sending library
+   - SMTP configuration: Gmail SMTP integration
+
+2.5 Additional Libraries:
+   - CORS: Cross-Origin Resource Sharing middleware
+   - dotenv: Environment variable management
+   - multer: File upload handling middleware
+   - axios: HTTP client library
+
+================================================================================
+3. PROJECT ARCHITECTURE & STRUCTURE
+================================================================================
+
+3.1 MVC (Model-View-Controller) Pattern:
+   The project follows MVC architecture:
+   - Models: Database schema definitions (User, Role, Permission, WorkspaceItem)
+   - Controllers: Business logic handlers (authController, userControllers, etc.)
+   - Routes: API endpoint definitions
+   - Services: Reusable business logic (authServices, emailService, s3Service)
+
+3.2 Directory Structure Learned:
+   /src
+     /config      - Configuration files (database, email, S3, multer, Redis)
+     /controllers - Request handlers (business logic)
+     /middleware  - Custom middleware (auth, validation, error handling, rate limiting)
+     /models      - Sequelize models (database schemas)
+     /routes      - Express route definitions
+     /schemas     - Validation schemas
+     /services    - Service layer (reusable business logic)
+     /utils       - Utility functions (JWT, bcrypt, helpers, validators)
+     /scripts     - Database migration and setup scripts
+     /seeds       - Database seeding scripts
+
+================================================================================
+4. DATABASE DESIGN & ORM CONCEPTS
+================================================================================
+
+4.1 Sequelize ORM:
+   - Learned how to define models using Sequelize.define()
+   - Understanding DataTypes (INTEGER, STRING, BOOLEAN, DATE, JSON, ENUM, TEXT)
+   - Primary keys and auto-increment
+   - Foreign keys and relationships (belongsTo, hasMany)
+   - Indexes for performance optimization
+   - Table naming conventions
+
+4.2 Database Models:
+
+   a) User Model:
+      - Stores user information (name, email, password, contact, phone)
+      - Password hashing with bcrypt
+      - Email verification system (OTP-based)
+      - Password reset token management
+      - Role-based access (roleId foreign key)
+      - Direct permissions (permissionIds JSON array)
+      - Secondary email support
+
+   b) Role Model:
+      - Role-based access control (RBAC)
+      - Stores role name, description
+      - Permission IDs array (JSON field)
+      - Many-to-one relationship with User
+
+   c) Permission Model:
+      - Granular permission system
+      - Resource-action pattern (e.g., "user:create", "post:delete")
+      - Unique constraint on permission name
+
+   d) WorkspaceItem Model:
+      - Hierarchical data structure (self-referential)
+      - Supports three types: folder, file, task
+      - Parent-child relationships for tree structure
+      - Soft delete pattern (isDeleted flag)
+      - Owner-based access control
+      - Task status management (todo, in_progress, done)
+
+4.3 Database Relationships:
+   - User belongsTo Role (many users can have one role)
+   - WorkspaceItem belongsTo User (ownership)
+   - WorkspaceItem self-referential (parent-child for hierarchy)
+
+================================================================================
+5. AUTHENTICATION & AUTHORIZATION
+================================================================================
+
+5.1 JWT (JSON Web Tokens):
+   - Token generation: generateToken() function
+   - Token verification: verifyToken() middleware
+   - Token payload structure (id, email, name)
+   - Token expiration management
+   - Bearer token authentication pattern
+
+5.2 Authentication Flow:
+   - Sign Up: User registration → Email verification OTP → Account activation
+   - Sign In: Email/password validation → JWT token generation
+   - Password Reset: Token generation → Email link → Password update
+   - Email Verification: OTP generation → OTP validation → Account verification
+
+5.3 Middleware Patterns:
+   - authenticateToken: Verifies JWT token in Authorization header
+   - authorizeRoles: Checks if user has required role
+   - authorizePermissions: Checks if user has required permissions
+   - Permission inheritance: Role permissions + User direct permissions
+
+5.4 Password Security:
+   - bcrypt hashing with salt rounds (12 rounds)
+   - Password comparison without storing plain text
+   - Secure password reset flow
+
+================================================================================
+6. API ROUTING & ENDPOINTS
+================================================================================
+
+6.1 Route Organization:
+   - Modular routing with Express Router
+   - API versioning (/api/v1/)
+   - Route prefixing for organization
+
+6.2 API Endpoints Learned:
+
+   Authentication Routes (/api/v1/auth):
+   - POST /signup - User registration
+   - POST /signin - User login
+   - POST /verifyEmailOtp - Email verification
+   - POST /resendEmailVerificationOtp - Resend OTP
+   - POST /request-password-reset - Password reset request
+
+   User Routes (/api/v1/users):
+   - GET /me - Get current user profile (protected)
+   - PUT /me - Update current user profile (protected)
+   - GET / - Get all users (protected)
+   - GET /:id - Get user by ID
+
+   Workspace Routes (/api/v1/workspace):
+   - GET /list - List children items (protected)
+   - GET /tree - Get full tree structure (protected)
+   - POST /folder - Create folder (protected)
+   - POST /file - Create file (protected)
+   - POST /task - Create task (protected, requires permission)
+   - PATCH /:id - Update item (protected, requires permission)
+   - DELETE /:id - Soft delete item (protected, requires permission)
+
+   Upload Routes (/api/v1/):
+   - POST /upload/single - Upload single file to S3
+   - POST /upload/image - Upload user profile image (protected)
+
+6.3 HTTP Methods:
+   - GET: Retrieve data
+   - POST: Create new resources
+   - PUT/PATCH: Update existing resources
+   - DELETE: Remove resources
+
+================================================================================
+7. FILE UPLOAD & AWS S3 INTEGRATION
+================================================================================
+
+7.1 AWS S3 Configuration:
+   - S3Client setup with AWS credentials
+   - Region configuration (eu-north-1)
+   - Environment variable management for credentials
+
+7.2 Multer Configuration:
+   - multer-s3 storage engine
+   - File categorization (images, videos, documents, audio, archives, code)
+   - Automatic file path generation (uploads/{category}/{filename})
+   - File size limits (10MB default)
+   - Unique filename generation (timestamp + random string)
+
+7.3 File Upload Flow:
+   - Single file upload endpoint
+   - Image upload with user profile update
+   - File metadata storage (original name, size, mimetype, URL)
+   - S3 URL generation for file access
+
+7.4 File Management Concepts:
+   - File type validation
+   - MIME type checking
+   - File size limits
+   - Organized storage structure
+
+================================================================================
+8. EMAIL SERVICE INTEGRATION
+================================================================================
+
+8.1 Nodemailer Setup:
+   - SMTP transporter configuration
+   - Gmail SMTP integration
+   - Environment variable configuration
+   - Connection verification on startup
+
+8.2 Email Use Cases:
+   - Email verification OTP sending
+   - Password reset link sending
+   - HTML email templates
+   - Error handling for email failures
+
+8.3 Email Service Pattern:
+   - Reusable sendEmail() utility function
+   - Template-based email content
+   - Error handling and logging
+
+================================================================================
+9. MIDDLEWARE CONCEPTS
+================================================================================
+
+9.1 Custom Middleware:
+   - Authentication middleware (JWT verification)
+   - Authorization middleware (role/permission checking)
+   - Error handling middleware
+   - Rate limiting middleware
+   - Validation middleware
+
+9.2 Middleware Execution Flow:
+   - Request → Middleware chain → Controller → Response
+   - Next() function for middleware chaining
+   - Error propagation through middleware
+
+9.3 Built-in Express Middleware:
+   - express.json() - Parse JSON request bodies
+   - express.urlencoded() - Parse URL-encoded bodies
+   - cors() - Cross-origin resource sharing
+
+================================================================================
+10. ERROR HANDLING & VALIDATION
+================================================================================
+
+10.1 Error Handling Patterns:
+    - Try-catch blocks in async functions
+    - Consistent error response format
+    - HTTP status codes (200, 400, 401, 403, 404, 500)
+    - Error logging for debugging
+
+10.2 Response Format:
+    - Standardized JSON responses
+    - success: boolean flag
+    - message: Human-readable message
+    - data: Response payload
+
+10.3 Input Validation:
+    - Required field checking
+    - Email format validation
+    - Password validation
+    - OTP validation with expiration
+
+================================================================================
+11. ADVANCED CONCEPTS LEARNED
+================================================================================
+
+11.1 Soft Delete Pattern:
+    - Using isDeleted flag instead of hard delete
+    - Data preservation for recovery
+    - Filtering deleted items in queries
+
+11.2 Hierarchical Data Structure:
+    - Self-referential relationships
+    - Tree traversal algorithms
+    - Parent-child navigation
+    - Recursive tree building
+
+11.3 Permission System:
+    - Role-based permissions (RBAC)
+    - Direct user permissions
+    - Permission inheritance
+    - Resource-action pattern
+
+11.4 OTP (One-Time Password) System:
+    - 6-digit OTP generation
+    - OTP expiration (10 minutes)
+    - OTP validation and cleanup
+    - Resend functionality
+
+11.5 Environment Configuration:
+    - .env file for sensitive data
+    - Environment-based configuration
+    - Default values for optional configs
+
+================================================================================
+12. DEPLOYMENT & INFRASTRUCTURE
+================================================================================
+
+12.1 Vercel Configuration:
+    - vercel.json for serverless deployment
+    - Build configuration
+    - Route configuration
+
+12.2 Database Management:
+    - Database auto-creation on connection
+    - Sequelize sync for schema management
+    - Migration scripts
+    - Seeding scripts for initial data
+
+12.3 Server Configuration:
+    - Port and host configuration
+    - Health check endpoint
+    - Graceful error handling
+    - Process exit on critical errors
+
+================================================================================
+13. CODE ORGANIZATION BEST PRACTICES
+================================================================================
+
+13.1 Separation of Concerns:
+    - Controllers handle HTTP requests/responses
+    - Services contain business logic
+    - Models define data structure
+    - Utils provide reusable functions
+
+13.2 Code Reusability:
+    - Service layer for shared logic
+    - Utility functions for common operations
+    - Middleware for cross-cutting concerns
+
+13.3 Naming Conventions:
+    - camelCase for variables and functions
+    - PascalCase for models and classes
+    - kebab-case for file names (some projects)
+    - Descriptive function and variable names
+
+================================================================================
+14. SECURITY BEST PRACTICES IMPLEMENTED
+================================================================================
+
+14.1 Password Security:
+    - Bcrypt hashing (12 salt rounds)
+    - Never storing plain text passwords
+    - Secure password comparison
+
+14.2 Token Security:
+    - JWT with expiration
+    - Secure token generation
+    - Token verification middleware
+
+14.3 Input Validation:
+    - Required field validation
+    - Email format validation
+    - File type and size validation
+
+14.4 Access Control:
+    - Role-based access control
+    - Permission-based authorization
+    - Protected routes with middleware
+
+================================================================================
+15. ASYNC/AWAIT & PROMISES
+================================================================================
+
+15.1 Asynchronous Programming:
+    - async/await syntax throughout
+    - Promise handling
+    - Error handling in async functions
+    - Database query handling
+
+15.2 Database Operations:
+    - Sequelize async methods (findOne, create, update, etc.)
+    - Transaction handling concepts
+    - Query optimization
+
+================================================================================
+16. KEY LEARNINGS SUMMARY
+================================================================================
+
+✅ RESTful API design principles
+✅ Express.js framework and routing
+✅ Sequelize ORM and database modeling
+✅ JWT authentication and authorization
+✅ AWS S3 file upload integration
+✅ Email service integration (Nodemailer)
+✅ Middleware pattern and implementation
+✅ Error handling and validation
+✅ Environment variable management
+✅ Role-based access control (RBAC)
+✅ Permission system design
+✅ Hierarchical data structures
+✅ Soft delete pattern
+✅ OTP-based email verification
+✅ Password reset flow
+✅ File upload handling
+✅ Security best practices
+✅ Code organization and architecture
+✅ Async/await programming
+✅ Project structure and modularity
+
+================================================================================
+17. NEXT STEPS FOR LEARNING
+================================================================================
+
+Areas to explore further:
+- Testing (Unit tests, Integration tests)
+- API documentation (Swagger/OpenAPI)
+- Caching strategies (Redis implementation)
+- Database indexing optimization
+- API rate limiting implementation
+- WebSocket for real-time features
+- Docker containerization
+- CI/CD pipeline setup
+- API versioning strategies
+- GraphQL as alternative to REST
+
+================================================================================
+18. PROJECT STATISTICS
+================================================================================
+
+Total Files Analyzed: ~40+ files
+Main Technologies: Node.js, Express, Sequelize, MySQL, AWS S3
+Lines of Code: ~2000+ lines
+API Endpoints: 15+ endpoints
+Database Models: 4 models
+Middleware Functions: 5+ custom middleware
+
+================================================================================
+END OF LEARNING DOCUMENTATION
+================================================================================
+
+This document represents a comprehensive overview of all concepts, technologies,
+and patterns learned while working on the GoodDay API project. This knowledge
+demonstrates proficiency in full-stack backend development with Node.js and
+Express.js, including authentication, file management, database design, and
+cloud service integration.
+

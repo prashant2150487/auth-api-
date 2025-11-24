@@ -10,7 +10,6 @@ const Permission = sequelize.define("Permission", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
   },
   description: {
     type: DataTypes.STRING,
@@ -29,6 +28,12 @@ const Permission = sequelize.define("Permission", {
   },
 }, {
   tableName: "permissions",
+  indexes:[
+    {
+      unique:true,
+      fields:["name",]
+    }
+  ]
 });
 
 export default Permission;
